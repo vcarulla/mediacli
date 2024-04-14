@@ -1,0 +1,18 @@
+services:
+  ombi:
+    image: lscr.io/linuxserver/ombi:latest
+    container_name: ombi
+    hostname: ombi.${HOSTNAME}
+    logging:
+      driver: json-file
+    ports:
+      - 3579:3579
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - UMASK=${UMASK}
+      - TZ=${TZ}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${CONFIG_BASE_PATH}/ombi:/config
+    restart: unless-stopped

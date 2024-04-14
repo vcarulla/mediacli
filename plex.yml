@@ -1,0 +1,24 @@
+
+services: 
+  plex:
+    image: lscr.io/linuxserver/plex:latest
+    container_name: plex
+    hostname: plex.${HOSTNAME}
+    logging:
+      driver: json-file
+    ports:
+      - 32400:32400
+    environment:
+     - PUID=${PUID}
+     - PGID=${PGID}
+     - UMASK=${UMASK}
+     - TZ=${TZ}
+      - VERSION=docker
+      - PLEX_CLAIM= #optional https://www.plex.tv/claim
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${CONFIG_BASE_PATH}/plex:/config
+      - ${DATA_PATH}/media/tv:/tv
+      - ${DATA_PATH}/media/movies:/movies
+    restart: on-failure
+    network_mode: host

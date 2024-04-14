@@ -1,0 +1,19 @@
+services:  
+  jackett:
+    container_name: jackett
+    image: ghcr.io/hotio/jackett
+    hostname: jackett.${HOSTNAME}
+    logging:
+      driver: json-file
+    ports:
+      - 9117:9117
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - UMASK=${UMASK}
+      - TZ=${TZ}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${CONFIG_BASE_PATH}/jackett:/config
+      - ${DATA_PATH}:/data
+    restart: on-failure

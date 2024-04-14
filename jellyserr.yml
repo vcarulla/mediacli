@@ -1,0 +1,18 @@
+services:
+    jellyseerr:
+      image: fallenbagel/jellyseerr:latest
+      container_name: jellyseerr
+      hostname: jellyseerr.${HOSTNAME}
+      logging:
+        driver: json-file
+      environment:
+        - PUID=${PUID}
+        - PGID=${PGID}
+        - TZ=${TZ}
+        - JELLYFIN_TYPE=emby
+      ports:
+        - 5055:5055
+      volumes:
+        - ${CONFIG_BASE_PATH}/jellyseerr:/config
+      restart: 
+        on-failure

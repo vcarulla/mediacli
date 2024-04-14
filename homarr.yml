@@ -1,0 +1,23 @@
+services:
+  homarr:
+    container_name: homarr
+    image: ghcr.io/ajnart/homarr:latest
+    hostname: homarr.${HOSTNAME}
+    logging:
+      driver: json-file
+    ports:
+      - 7575:7575
+    logging:
+      driver: json-file
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - UMASK=${UMASK}
+      - TZ=${TZ}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock # Optional, only if you want docker integration
+      - /etc/localtime:/etc/localtime:ro
+      - ${CONFIG_BASE_PATH}/homarr:/app/data/configs
+      - ${CONFIG_BASE_PATH}/homarr/public/icons:/app/public/icons
+      - ${DATA_PATH}:/data
+    restart: on-failure

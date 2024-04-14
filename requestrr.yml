@@ -1,0 +1,17 @@
+services:
+  requestrr:
+    container_name: requestrr
+    image: ghcr.io/hotio/requestrr
+    hostname: requestrr.${HOSTNAME}
+    logging:
+      driver: json-file
+    ports:
+      - "4545:4545"
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - UMASK=${UMASK}
+      - TZ=${TZ}
+    volumes:
+      - ${CONFIG_BASE_PATH}/requestrr:/config
+    restart: on-failure

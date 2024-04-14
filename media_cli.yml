@@ -1,0 +1,65 @@
+services:
+  bazarr:
+    extends:
+      file: bazarr.yml
+    restart: always
+
+  emby:
+    extends:
+      file: embyserver.yml
+    restart: always
+
+  homarr:
+    extends:
+      file: homarr.yml
+    restart: always
+
+  jackett:
+    extends:
+      file: jackett.yml
+    restart: always
+
+  jellyseerr:
+    extends:
+      file: jellyseerr.yml
+    restart: always
+
+  ombi:
+    extends:
+      file: ombi.yml
+    restart: always
+
+  prowlarr:
+    extends:
+      file: prowlarr.yml
+    restart: always
+
+  qbittorrent:
+    extends:
+      file: qbittorrent.yml
+    restart: always
+
+  radarr:
+    extends:
+      file: radarr.yml
+    restart: always
+
+  recyclarr:
+    extends:
+      file: recyclarr.yml
+    restart: always
+
+  requestrr:
+    extends:
+      file: requestrr.yml
+    restart: always
+
+  sonarr:
+    extends:
+      file: sonarr.yml
+    restart: always
+
+
+networks: 
+  media_cli_ntk:
+    driver: bridge
