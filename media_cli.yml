@@ -6,7 +6,7 @@ services:
 
   emby:
     extends:
-      file: embyserver.yml
+      file: emby.yml
     restart: always
 
   homarr:
@@ -58,7 +58,6 @@ services:
     extends:
       file: sonarr.yml
     restart: always
-
 
 networks: 
   media_cli_ntk:
