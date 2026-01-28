@@ -1,0 +1,45 @@
+services:
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    hostname: flaresolverr
+    networks:
+      - media_net
+    environment:
+      - LOG_LEVEL=info
+      - LOG_HTML=false
+      - CAPTCHA_SOLVER=none
+      - TZ=${TZ}
+    ports:
+      - "8191:8191"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8191/health"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    # Uncomment and customize for Traefik
+    # labels:
+    #   - "traefik.enable=true"
+    #   - "traefik.http.routers.flaresolverr.rule=Host(\`flaresolverr.example.com\`)"
+    #   - "traefik.http.routers.flaresolverr.entrypoints=websecure"
+    #   - "traefik.http.routers.flaresolverr.tls=true"
+    #   - "traefik.http.services.flaresolverr.loadbalancer.server.port=8191"
+
+networks:
+  media_net:
+    external: true

@@ -1,0 +1,236 @@
+# =============================================================================
+# MEDIACLI STACK - Main Orchestrator
+# =============================================================================
+# Secrets: Vault Agent -> Docker tmpfs volume -> services
+# 
+# Usage:
+#   docker compose up -d              # Start all active services
+#   docker compose --profile sync up  # Include recyclarr
+#   docker compose --profile requests-alt up  # Include ombi/requestrr
+#
+# Each service is defined in its own file for easy reading/editing.
+# This file orchestrates which services run and with what settings.
+# =============================================================================
+
+services:
+
+  # ---------------------------------------------------------------------------
+  # PVR - Media Management (Hotio images - /init entrypoint)
+  # ---------------------------------------------------------------------------
+  sonarr:
+    extends:
+      file: sonarr.yml
+      service: sonarr
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        if [ -f /run/secrets/mediacli.env ]; then set -a; . /run/secrets/mediacli.env; set +a; fi
+        exec /init
+    volumes:
+      - vault_secrets_tmpfs:/run/secrets:ro
+    restart: unless-stopped
+
+  radarr:
+    extends:
+      file: radarr.yml
+      service: radarr
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        if [ -f /run/secrets/mediacli.env ]; then set -a; . /run/secrets/mediacli.env; set +a; fi
+        exec /init
+    volumes:
+      - vault_secrets_tmpfs:/run/secrets:ro
+    restart: unless-stopped
+
+  bazarr:
+    extends:
+      file: bazarr.yml
+      service: bazarr
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        if [ -f /run/secrets/mediacli.env ]; then set -a; . /run/secrets/mediacli.env; set +a; fi
+        exec /init
+    volumes:
+      - vault_secrets_tmpfs:/run/secrets:ro
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------------------
+  # INDEXERS
+  # ---------------------------------------------------------------------------
+  prowlarr:
+    extends:
+      file: prowlarr.yml
+      service: prowlarr
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        if [ -f /run/secrets/mediacli.env ]; then set -a; . /run/secrets/mediacli.env; set +a; fi
+        exec /init
+    volumes:
+      - vault_secrets_tmpfs:/run/secrets:ro
+    restart: unless-stopped
+
+  jackett:
+    extends:
+      file: jackett.yml
+      service: jackett
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        if [ -f /run/secrets/mediacli.env ]; then set -a; . /run/secrets/mediacli.env; set +a; fi
+        exec /init
+    volumes:
+      - vault_secrets_tmpfs:/run/secrets:ro
+    restart: unless-stopped
+
+  flaresolverr:
+    extends:
+      file: flaresolverr.yml
+      service: flaresolverr
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        if [ -f /run/secrets/mediacli.env ]; then set -a; . /run/secrets/mediacli.env; set +a; fi
+        exec /usr/bin/dumb-init -- /usr/local/bin/python -u /app/flaresolverr.py
+    volumes:
+      - vault_secrets_tmpfs:/run/secrets:ro
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------------------
+  # DOWNLOADER (Hotio image - /init entrypoint)
+  # ---------------------------------------------------------------------------
+  qbittorrent:
+    extends:
+      file: qbittorrent.yml
+      service: qbittorrent
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        if [ -f /run/secrets/mediacli.env ]; then set -a; . /run/secrets/mediacli.env; set +a; fi
+        exec /init
+    volumes:
+      - vault_secrets_tmpfs:/run/secrets:ro
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------------------
+  # MEDIA SERVERS
+  # ---------------------------------------------------------------------------
+  plex:
+    extends:
+      file: plex.yml
+      service: plex
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        if [ -f /run/secrets/mediacli.env ]; then set -a; . /run/secrets/mediacli.env; set +a; fi
+        exec /init
+    volumes:
+      - vault_secrets_tmpfs:/run/secrets:ro
+    profiles: ["plex"]
+    restart: on-failure
+
+  emby:
+    extends:
+      file: emby.yml
+      service: emby
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        if [ -f /run/secrets/mediacli.env ]; then set -a; . /run/secrets/mediacli.env; set +a; fi
+        exec /init
+    volumes:
+      - vault_secrets_tmpfs:/run/secrets:ro
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------------------
+  # REQUESTS
+  # ---------------------------------------------------------------------------
+  jellyseerr:
+    extends:
+      file: jellyseerr.yml
+      service: jellyseerr
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        if [ -f /run/secrets/mediacli.env ]; then set -a; . /run/secrets/mediacli.env; set +a; fi
+        exec /sbin/tini -- pnpm start
+    volumes:
+      - vault_secrets_tmpfs:/run/secrets:ro
+    restart: unless-stopped
+
+  # Alternative request managers (disabled by default)
+  ombi:
+    extends:
+      file: ombi.yml
+      service: ombi
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        if [ -f /run/secrets/mediacli.env ]; then set -a; . /run/secrets/mediacli.env; set +a; fi
+        exec /init
+    volumes:
+      - vault_secrets_tmpfs:/run/secrets:ro
+    profiles: ["requests-alt"]
+    restart: unless-stopped
+
+  requestrr:
+    extends:
+      file: requestrr.yml
+      service: requestrr
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        if [ -f /run/secrets/mediacli.env ]; then set -a; . /run/secrets/mediacli.env; set +a; fi
+        exec /init
+    volumes:
+      - vault_secrets_tmpfs:/run/secrets:ro
+    profiles: ["requests-alt"]
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------------------
+  # UTILITIES
+  # ---------------------------------------------------------------------------
+  dispatcharr:
+    extends:
+      file: dispatcharr.yml
+      service: dispatcharr
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        if [ -f /run/secrets/mediacli.env ]; then set -a; . /run/secrets/mediacli.env; set +a; fi
+        exec /app/docker/entrypoint.sh
+    volumes:
+      - vault_secrets_tmpfs:/run/secrets:ro
+    restart: unless-stopped
+
+  # Sync tool (run on-demand)
+  recyclarr:
+    extends:
+      file: recyclarr.yml
+      service: recyclarr
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        if [ -f /run/secrets/mediacli.env ]; then set -a; . /run/secrets/mediacli.env; set +a; fi
+        exec /sbin/tini -- /entrypoint.sh
+    volumes:
+      - vault_secrets_tmpfs:/run/secrets:ro
+    profiles: ["sync"]
+    restart: unless-stopped
+
+# =============================================================================
+# VOLUMES
+# =============================================================================
+volumes:
+  vault_secrets_tmpfs:
+    external: true
+    name: vault-agent_vault_secrets_tmpfs
+
+# =============================================================================
+# NETWORKS
+# =============================================================================
+networks:
+  media_cli_ntk:
+    external: true

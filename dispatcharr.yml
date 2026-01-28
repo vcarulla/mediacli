@@ -1,0 +1,43 @@
+services:
+  dispatcharr:
+    container_name: dispatcharr
+    image: ghcr.io/dispatcharr/dispatcharr:0.17.0
+    hostname: dispatcharr.${HOSTNAME}
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - DISPATCHARR_ENV=aio
+      - DISPATCHARR_LOG_LEVEL=info
+    ports:
+      - 9192:9191
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${CONFIG_BASE_PATH}/dispatcharr:/data
+    networks:
+      - media_cli_ntk
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9191/api/health"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        labels: "service={{.Name}},component=iptv,environment=mediacli"
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 2G
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    restart: unless-stopped
+
+networks:
+  media_cli_ntk:
+    external: true

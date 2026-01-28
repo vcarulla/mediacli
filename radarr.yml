@@ -1,0 +1,43 @@
+services: 
+  radarr:
+    container_name: radarr
+    image: ghcr.io/hotio/radarr:release-6.0.4.10291
+    hostname: radarr.${HOSTNAME}
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - UMASK=${UMASK}
+      - TZ=${TZ}
+    ports:
+      - 7878:7878
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${CONFIG_BASE_PATH}/radarr:/config
+      - ${DATA_PATH}:/data
+    networks:
+      - media_cli_ntk
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7878/ping"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        labels: "service={{.Name}},component=pvr,environment=mediacli"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    restart: unless-stopped
+
+networks:
+  media_cli_ntk:
+    external: true

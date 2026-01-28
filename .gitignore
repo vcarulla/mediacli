@@ -1,0 +1,59 @@
+# =============================================================================
+# MEDIACLI
+# =============================================================================
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Private documentation and scripts
+private/
+
+# Vault agent config (contains real addresses)
+/vault-agent/
+
+# Flaresolverr (contains Traefik labels with real hostnames)
+flaresolverr.yml
+
+# Data directories and symlinks
+dedalo-media-local
+secrets/
+
+# Backup files
+*.bak
+*.backup
+*.orig
+
+# =============================================================================
+# OS AND EDITOR
+# =============================================================================
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+
+# VSCode
+.vscode/
+.history/
+
+# Vim
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+Session.vim
+tags
+[._]*.un~
