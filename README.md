@@ -22,7 +22,7 @@ Media server stack with Docker Compose and HashiCorp Vault for secrets managemen
 | **Requests** |||
 | Jellyseerr | Request management | 5055 |
 | Ombi | Request management (profile) | 3579 |
-| Requestrr | Discord bot (profile) | 4545 |
+| Requestrr | Chat bot for Sonarr/Radarr (profile) | 4545 |
 | **Utilities** |||
 | Dispatcharr | IPTV streams & EPG management | 8282 |
 | Recyclarr | Sync tool (profile) | - |
