@@ -1,16 +1,3 @@
-# =============================================================================
-# MEDIACLI STACK - Main Orchestrator
-# =============================================================================
-# Secrets: Vault Agent -> Docker tmpfs volume -> services
-# 
-# Usage:
-#   docker compose up -d              # Start all active services
-#   docker compose --profile sync up  # Include recyclarr
-#   docker compose --profile requests-alt up  # Include ombi/requestrr
-#
-# Each service is defined in its own file for easy reading/editing.
-# This file orchestrates which services run and with what settings.
-# =============================================================================
 
 services:
 
