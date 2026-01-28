@@ -1,0 +1,64 @@
+services:
+  vault-agent:
+    image: hashicorp/vault:1.21.1
+    container_name: mediacli-vault-agent
+    user: "0:0"
+    init: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - SETGID
+      - SETUID
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=10m
+    environment:
+      - VAULT_ADDR
+      - VAULT_SKIP_VERIFY=true
+      - VAULT_SKIP_SETCAP=true
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        echo "Starting Vault Agent..."
+        if [ -f /vault/creds/role-id ] && [ -f /vault/creds/secret-id ]; then
+          cp /vault/creds/role-id /tmp/role-id
+          cp /vault/creds/secret-id /tmp/secret-id
+          chmod 600 /tmp/role-id /tmp/secret-id
+        else
+          echo "ERROR: Credentials not found. Run vault-bootstrap.sh"
+          exit 1
+        fi
+        exec vault agent -config=/vault/config/agent.hcl -log-level=info
+    volumes:
+      - ./agent.hcl:/vault/config/agent.hcl:ro
+      - ./templates:/vault/config/templates:ro
+      - /run/mediacli-vault:/vault/creds:ro
+      - vault_secrets_tmpfs:/vault/secrets
+    networks:
+      - media_net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "sh", "-c", "test -f /vault/secrets/mediacli.env"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  vault_secrets_tmpfs:
+    driver: local
+    driver_opts:
+      type: tmpfs
+      device: tmpfs
+      o: size=50m,uid=0,gid=0,mode=0700,noexec,nosuid
+
+networks:
+  media_net:
+    external: true

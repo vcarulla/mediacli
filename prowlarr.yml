@@ -1,0 +1,43 @@
+services: 
+  prowlarr:
+    container_name: prowlarr
+    image: ghcr.io/hotio/prowlarr:release-2.3.0.5236
+    hostname: prowlarr.${HOSTNAME}
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - UMASK=${UMASK}
+      - TZ=${TZ}
+    ports:
+      - "9696:9696"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${CONFIG_BASE_PATH}/prowlarr:/config
+      - ${DATA_PATH}:/data
+    networks:
+      - media_cli_ntk
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9696/ping"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        labels: "service={{.Name}},component=indexer,environment=mediacli"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    restart: unless-stopped
+
+networks:
+  media_cli_ntk:
+    external: true
