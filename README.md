@@ -21,6 +21,11 @@ Media server stack with Docker Compose and HashiCorp Vault for secrets managemen
 | Plex | Media server (profile) | 32400 |
 | **Requests** |||
 | Jellyseerr | Request management | 5055 |
+| Ombi | Request management (profile) | 3579 |
+| Requestrr | Discord bot (profile) | 4545 |
+| **Utilities** |||
+| Dispatcharr | Notifications | 8282 |
+| Recyclarr | Sync tool (profile) | - |
 
 ## Prerequisites
 
