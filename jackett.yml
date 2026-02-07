@@ -1,7 +1,7 @@
 services:
   jackett:
     container_name: jackett
-    image: ghcr.io/hotio/jackett:release-v0.24.726
+    image: ghcr.io/hotio/jackett:release-v0.24.1060
     hostname: jackett.${HOSTNAME}
     environment:
       - PUID=${PUID}

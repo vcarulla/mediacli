@@ -1,7 +1,7 @@
 services:
   dispatcharr:
     container_name: dispatcharr
-    image: ghcr.io/dispatcharr/dispatcharr:0.17.0
+    image: ghcr.io/dispatcharr/dispatcharr:0.18.1
     hostname: dispatcharr.${HOSTNAME}
     environment:
       - PUID=${PUID}
