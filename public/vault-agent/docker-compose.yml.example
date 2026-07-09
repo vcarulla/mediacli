@@ -1,6 +1,6 @@
 services:
   vault-agent:
-    image: hashicorp/vault:1.21.1
+    image: hashicorp/vault:2.0.3
     container_name: mediacli-vault-agent
     user: "0:0"
     init: true
@@ -11,6 +11,7 @@ services:
     cap_add:
       - SETGID
       - SETUID
+      - IPC_LOCK  # vault 2.x mlock
     read_only: true
     tmpfs:
       - /tmp:rw,noexec,nosuid,size=10m
@@ -38,6 +39,11 @@ services:
       - vault_secrets_tmpfs:/vault/secrets
     networks:
       - media_net
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "sh", "-c", "test -f /vault/secrets/mediacli.env"]

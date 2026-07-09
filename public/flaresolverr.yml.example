@@ -1,6 +1,10 @@
 services:
   flaresolverr:
-    image: ghcr.io/flaresolverr/flaresolverr:latest
+    image: ghcr.io/flaresolverr/flaresolverr:v3.4.6  # always pin, never :latest
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL  # runs as non-root, no caps needed
     container_name: flaresolverr
     hostname: flaresolverr
     networks:

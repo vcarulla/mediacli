@@ -2,6 +2,16 @@ services:
   requestrr:
     container_name: requestrr
     image: ghcr.io/hotio/requestrr:release-2.1.9
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:  # s6/entrypoint ajusta ownership a PUID/PGID en el arranque
+      - CHOWN
+      - SETUID
+      - SETGID
+      - FOWNER
+      - DAC_OVERRIDE
     hostname: requestrr.${HOSTNAME}
     environment:
       - PUID=${PUID}

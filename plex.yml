@@ -2,6 +2,16 @@
 services: 
   plex:
     image: lscr.io/linuxserver/plex:1.42.1
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:  # s6/entrypoint ajusta ownership a PUID/PGID en el arranque
+      - CHOWN
+      - SETUID
+      - SETGID
+      - FOWNER
+      - DAC_OVERRIDE
     container_name: plex
     hostname: plex.${HOSTNAME}
     logging:
@@ -9,10 +19,10 @@ services:
     ports:
       - 32400:32400
     environment:
-     - PUID=${PUID}
-     - PGID=${PGID}
-     - UMASK=${UMASK}
-     - TZ=${TZ}
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - UMASK=${UMASK}
+      - TZ=${TZ}
       - VERSION=docker
       - PLEX_CLAIM= #optional https://www.plex.tv/claim
     volumes:
@@ -22,6 +32,3 @@ services:
       - ${DATA_PATH}/media/movies:/movies
     restart: on-failure
     network_mode: host
-networks:
-  media_cli_ntk:
-    external: true

@@ -1,7 +1,17 @@
 services: 
   sonarr:
     container_name: sonarr
-    image: ghcr.io/hotio/sonarr:release-4.0.16.2944
+    image: ghcr.io/hotio/sonarr:release-4.0.17.2952
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:  # s6/entrypoint ajusta ownership a PUID/PGID en el arranque
+      - CHOWN
+      - SETUID
+      - SETGID
+      - FOWNER
+      - DAC_OVERRIDE
     hostname: sonarr.${HOSTNAME}
     environment:
       - PUID=${PUID}

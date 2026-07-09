@@ -2,6 +2,16 @@ services:
   emby:
     container_name: embyserver
     image: emby/embyserver:4.10.0.2
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:  # s6/entrypoint ajusta ownership a PUID/PGID en el arranque
+      - CHOWN
+      - SETUID
+      - SETGID
+      - FOWNER
+      - DAC_OVERRIDE
     hostname: emby.${HOSTNAME}
     environment:
       - PUID=${PUID}
@@ -18,7 +28,7 @@ services:
     networks:
       - media_cli_ntk
     healthcheck:
-      test: ["CMD-SHELL", "pgrep EmbyServer || exit 0"]
+      test: ["CMD-SHELL", "pgrep EmbyServer || exit 1"]
       interval: 1m
       timeout: 5s
       retries: 3

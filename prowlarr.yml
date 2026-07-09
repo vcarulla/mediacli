@@ -1,7 +1,17 @@
 services: 
   prowlarr:
     container_name: prowlarr
-    image: ghcr.io/hotio/prowlarr:release-2.3.0.5236
+    image: ghcr.io/hotio/prowlarr:release-2.3.5.5327
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:  # s6/entrypoint ajusta ownership a PUID/PGID en el arranque
+      - CHOWN
+      - SETUID
+      - SETGID
+      - FOWNER
+      - DAC_OVERRIDE
     hostname: prowlarr.${HOSTNAME}
     environment:
       - PUID=${PUID}

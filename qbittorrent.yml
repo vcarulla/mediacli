@@ -1,7 +1,17 @@
 services:  
   qbittorrent:
     container_name: qbittorrent
-    image: ghcr.io/hotio/qbittorrent:release-5.1.4
+    image: ghcr.io/hotio/qbittorrent:release-v5.2.0
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:  # s6/entrypoint ajusta ownership a PUID/PGID en el arranque
+      - CHOWN
+      - SETUID
+      - SETGID
+      - FOWNER
+      - DAC_OVERRIDE
     hostname: qbit.${HOSTNAME}
     environment:
       - PUID=${PUID}
@@ -9,8 +19,8 @@ services:
       - UMASK=${UMASK}
       - TZ=${TZ}
     ports:
-      - 6681:6681/tcp
-      - 6681:6881/udp
+      - 11040:11040/tcp 
+      - 11040:11040/udp
       - 8080:8080
     volumes:
       - /etc/localtime:/etc/localtime:ro

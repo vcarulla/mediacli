@@ -2,6 +2,16 @@ services:
   recyclarr:
     container_name: recyclarr
     image: ghcr.io/recyclarr/recyclarr:7.5.2
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:  # s6/entrypoint ajusta ownership a PUID/PGID en el arranque
+      - CHOWN
+      - SETUID
+      - SETGID
+      - FOWNER
+      - DAC_OVERRIDE
     hostname: recyclarr.${HOSTNAME}
     environment:
       - PUID=${PUID}
@@ -14,7 +24,8 @@ services:
     networks:
       - media_cli_ntk
     healthcheck:
-      test: ["CMD-SHELL", "pgrep recyclarr || exit 0"]
+      # el daemon real es supercronic; recyclarr solo corre al disparar el cron
+      test: ["CMD-SHELL", "pgrep supercronic || exit 1"]
       interval: 2m
       timeout: 10s
       retries: 3
